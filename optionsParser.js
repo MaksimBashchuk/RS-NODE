@@ -1,9 +1,10 @@
 const fs = require('fs');
 const { F_OK, R_OK, W_OK } = require('constants');
 const constants = require('./constants');
+const { ValidationError, PathError } = require('./customErrors');
 
 const configValidator = (configArr) => {
-  return configArr.every((item) => /A|C1|C0|R1|R0/.test(item));
+  return configArr.every((item) => /^(A|C1|C0|R1|R0)$/.test(item));
 };
 
 const getOptionValue = (option, args) => {
@@ -17,10 +18,7 @@ const getOptionValue = (option, args) => {
       : args.lastIndexOf(option.shortFlag);
 
   if (idx !== lastIdx) {
-    process.stderr.write(
-      'An error has occurred. Duplication of parameters is not allowed!\n'
-    );
-    process.exit(1);
+    throw new ValidationError('Duplication of parameters is not allowed!\n');
   }
 
   if (
@@ -39,39 +37,51 @@ const optionsParser = () => {
   };
 
   const args = process.argv.slice(2);
-  options.config = getOptionValue(constants.config, args).split('-');
+  options.config = getOptionValue(constants.config, args);
+  if (!options.config) {
+    throw new ValidationError(
+      `Config parameter is required!\n
+      Use ${constants.config.shortFlag}, ${constants.config.longFlag} to setup cipher configuration\n`
+    );
+  }
+
+  options.config = options.config.split('-');
   options.input = getOptionValue(constants.input, args);
   options.output = getOptionValue(constants.output, args);
 
   if (!configValidator(options.config)) {
-    process.stderr.write('An error has occurred. Wrong config string\n');
-    process.exit(1);
+    throw new ValidationError('Wrong config string\n');
   }
 
   if (!options.config.length) {
-    process.stderr.write(`An error has occurred. Config parameter is required!\n
-    Use ${constants.config.shortFlag}, ${constants.config.longFlag} to setup cipher configuration\n`);
-    process.exit(1);
+    throw new ValidationError(
+      `Config parameter is required!\n
+      Use ${constants.config.shortFlag}, ${constants.config.longFlag} to setup cipher configuration\n`
+    );
   }
 
   return options;
 };
 
 const checkFilePath = (path, fileType) => {
-  const cb = (err) => {
-    if (err) {
-      process.stderr.write(
-        `An error has occured. ${fileType} file doesn't exist or you don't have permissions!`
-      );
-      process.exit(1);
-    }
-  };
-
   if (path && fileType === 'Input') {
-    fs.access(path, F_OK | R_OK, cb);
+    try {
+      fs.access(path, F_OK | R_OK);
+    } catch (e) {
+      throw new PathError(
+        `${fileType} file doesn't exist or you don't have permissions!`
+      );
+    }
   }
+
   if (path && fileType === 'Output') {
-    fs.access(path, F_OK | W_OK, cb);
+    try {
+      fs.access(path, F_OK | W_OK);
+    } catch (e) {
+      throw new PathError(
+        `${fileType} file doesn't exist or you don't have permissions!`
+      );
+    }
   }
 };
 
