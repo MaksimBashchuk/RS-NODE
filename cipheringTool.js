@@ -4,7 +4,6 @@ const { stdin, stdout } = require('process');
 const stream = require('stream');
 const { optionsParser, checkFilePath } = require('./optionsParser');
 const cipher = require('./transformStreams');
-const { ValidationError } = require('./customErrors');
 
 let options = {};
 
@@ -19,7 +18,6 @@ try {
   checkFilePath(options.input, 'Input');
   checkFilePath(options.output, 'Output');
 } catch (e) {
-  // process.stderr.write(e.message);
   process.exit(1);
 }
 
