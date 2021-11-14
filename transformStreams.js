@@ -38,11 +38,11 @@ const atbash = (str) => {
 
 class C1 extends Transform {
   constructor() {
-    super();
+    super({ highWaterMark: 1 });
   }
 
   _transform(chunk, encoding, callback) {
-    const transformChunk = caesar(chunk, 1);
+    const transformChunk = caesar(chunk.toString('utf8'), 1);
     this.push(transformChunk);
     callback();
   }
@@ -50,11 +50,11 @@ class C1 extends Transform {
 
 class C0 extends Transform {
   constructor() {
-    super();
+    super({ highWaterMark: 1 });
   }
 
   _transform(chunk, encoding, callback) {
-    const transformChunk = caesar(chunk, 0);
+    const transformChunk = caesar(chunk.toString('utf8'), 0);
     this.push(transformChunk);
     callback();
   }
@@ -62,11 +62,11 @@ class C0 extends Transform {
 
 class R1 extends Transform {
   constructor() {
-    super();
+    super({ highWaterMark: 1 });
   }
 
   _transform(chunk, encoding, callback) {
-    const transformChunk = rot8(chunk, 1);
+    const transformChunk = rot8(chunk.toString('utf8'), 1);
     this.push(transformChunk);
     callback();
   }
@@ -74,11 +74,11 @@ class R1 extends Transform {
 
 class R0 extends Transform {
   constructor() {
-    super();
+    super({ highWaterMark: 1 });
   }
 
   _transform(chunk, encoding, callback) {
-    const transformChunk = rot8(chunk, 0);
+    const transformChunk = rot8(chunk.toString('utf8'), 0);
     this.push(transformChunk);
     callback();
   }
@@ -86,11 +86,11 @@ class R0 extends Transform {
 
 class A extends Transform {
   constructor() {
-    super();
+    super({ highWaterMark: 1 });
   }
 
   _transform(chunk, encoding, callback) {
-    const transformChunk = atbash(chunk);
+    const transformChunk = atbash(chunk.toString('utf8'));
     this.push(transformChunk);
     callback();
   }
