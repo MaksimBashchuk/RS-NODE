@@ -8,18 +8,18 @@ const configValidator = (configArr) => {
 };
 
 const getOptionValue = (option, args) => {
+  const isDuplicated =
+    args.filter((item) => item === option.shortFlag || item === option.longFlag)
+      .length > 1;
+
+  if (isDuplicated) {
+    throw new ValidationError('Duplication of parameters is not allowed!\n');
+  }
+
   const idx =
     args.indexOf(option.shortFlag) === -1
       ? args.indexOf(option.longFlag)
       : args.indexOf(option.shortFlag);
-  const lastIdx =
-    args.lastIndexOf(option.shortFlag) === -1
-      ? args.lastIndexOf(option.longFlag)
-      : args.lastIndexOf(option.shortFlag);
-
-  if (idx !== lastIdx) {
-    throw new ValidationError('Duplication of parameters is not allowed!\n');
-  }
 
   if (
     args[idx + 1] &&
@@ -66,7 +66,7 @@ const optionsParser = () => {
 const checkFilePath = (path, fileType) => {
   if (path && fileType === 'Input') {
     try {
-      fs.access(path, F_OK | R_OK);
+      fs.accessSync(path, F_OK | R_OK);
     } catch (e) {
       throw new PathError(
         `${fileType} file doesn't exist or you don't have permissions!`
@@ -76,7 +76,7 @@ const checkFilePath = (path, fileType) => {
 
   if (path && fileType === 'Output') {
     try {
-      fs.access(path, F_OK | W_OK);
+      fs.accessSync(path, F_OK | W_OK);
     } catch (e) {
       throw new PathError(
         `${fileType} file doesn't exist or you don't have permissions!`
@@ -85,4 +85,9 @@ const checkFilePath = (path, fileType) => {
   }
 };
 
-module.exports = { optionsParser, checkFilePath };
+module.exports = {
+  optionsParser,
+  checkFilePath,
+  configValidator,
+  getOptionValue,
+};

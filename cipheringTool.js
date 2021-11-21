@@ -1,8 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const { stdin, stdout } = require('process');
-const stream = require('stream');
 const { optionsParser, checkFilePath } = require('./optionsParser');
+const { pipeline } = require('stream');
 const cipher = require('./transformStreams');
 
 let options = {};
@@ -26,7 +25,7 @@ const reader = options.input
       encoding: 'utf8',
       highWaterMark: 1,
     })
-  : stdin;
+  : process.stdin;
 const writer =
   options.output && fs.existsSync(options.output)
     ? fs.createWriteStream(options.output, {
@@ -34,9 +33,13 @@ const writer =
         highWaterMark: 1,
         flags: 'a+',
       })
-    : stdout;
+    : process.stdout;
 
-const transform = stream.compose(
-  ...options.config.map((item) => new cipher[item]())
-);
-reader.pipe(transform).pipe(writer);
+const transformArray = options.config.map((item) => new cipher[item]());
+
+pipeline([reader, ...transformArray, writer], (err) => {
+  if (err) {
+    process.stderr.write('Something went wrong! ', err.message);
+    process.exit(1);
+  }
+});

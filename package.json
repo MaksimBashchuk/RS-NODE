@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1"
+  },
+  "dependencies": {
+    "@types/jest": "^27.0.3"
+  }
+}
