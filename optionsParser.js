@@ -8,18 +8,18 @@ const configValidator = (configArr) => {
 };
 
 const getOptionValue = (option, args) => {
+  const isDuplicated =
+    args.filter((item) => item === option.shortFlag || item === option.longFlag)
+      .length > 1;
+
+  if (isDuplicated) {
+    throw new ValidationError('Duplication of parameters is not allowed!\n');
+  }
+
   const idx =
     args.indexOf(option.shortFlag) === -1
       ? args.indexOf(option.longFlag)
       : args.indexOf(option.shortFlag);
-  const lastIdx =
-    args.lastIndexOf(option.shortFlag) === -1
-      ? args.lastIndexOf(option.longFlag)
-      : args.lastIndexOf(option.shortFlag);
-
-  if (idx !== lastIdx) {
-    throw new ValidationError('Duplication of parameters is not allowed!\n');
-  }
 
   if (
     args[idx + 1] &&
@@ -85,4 +85,9 @@ const checkFilePath = (path, fileType) => {
   }
 };
 
-module.exports = { optionsParser, checkFilePath };
+module.exports = {
+  optionsParser,
+  checkFilePath,
+  configValidator,
+  getOptionValue,
+};
