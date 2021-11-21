@@ -2,7 +2,9 @@
 
 1. To launch this tool dowload project or clone it to your computer.
 2. Navigate to newly created folder and run terminal.
-3. Type (example) `node .\cipheringTool.js -c "C1-R0-A" -i "./input.txt" -o "./outut.txt"`
+3. Install all dependencies via `npm install`.
+4. Type (example) `node .\cipheringTool.js -c "C1-R0-A" -i "./input.txt" -o "./outut.txt"`
+5. Type `npm run test` to run tests and `npm run coverage` to see test coverage.
 
    Descrition:
 
