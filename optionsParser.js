@@ -4,12 +4,12 @@ const constants = require('./constants');
 const { ValidationError, PathError } = require('./customErrors');
 
 const configValidator = (configArr) => {
-  return configArr.every((item) => /^(A|C1|C0|R1|R0)$/.test(item));
+  return configArr.every((param) => /^(A|C1|C0|R1|R0)$/.test(param));
 };
 
 const getOptionValue = (option, args) => {
   const isDuplicated =
-    args.filter((item) => item === option.shortFlag || item === option.longFlag)
+    args.filter((arg) => arg === option.shortFlag || arg === option.longFlag)
       .length > 1;
 
   if (isDuplicated) {
